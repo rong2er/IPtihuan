@@ -3,228 +3,290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>优选 IP/域名 批量替换与去重工具</title>
+    <title>优选 IP/域名 批量处理工具</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
+            background-color: #f0f2f5;
             color: #333;
-            max-width: 1200px;
-            margin: 30px auto;
+            max-width: 1300px;
+            margin: 20px auto;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            background: #fff;
         }
-        h2 {
+        .main-title {
             text-align: center;
-            color: #2c3e50;
+            color: #1a73e8;
             margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 600;
         }
+        .section-box {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            padding: 25px;
+            border: 1px solid #e1e4e8;
+        }
+        .section-title {
+            font-size: 20px;
+            color: #202124;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f3f4;
+        }
+        .section-basic { border-left: 6px solid #3498db; }
+        .section-advanced { border-left: 6px solid #e67e22; }
+
         .container {
             display: flex;
-            gap: 20px;
+            gap: 25px;
             flex-wrap: wrap;
         }
         .panel {
             flex: 1;
-            min-width: 300px;
+            min-width: 350px;
             display: flex;
             flex-direction: column;
-            background: #fafafa;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
         }
         label {
             display: block;
-            margin: 10px 0 5px;
-            font-weight: bold;
-            color: #34495e;
+            margin: 12px 0 6px;
+            font-weight: 600;
+            color: #5f6368;
+            font-size: 14px;
         }
         input[type="text"], textarea {
             width: 100%;
             box-sizing: border-box;
             padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-family: monospace;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
             font-size: 14px;
-            resize: vertical;
+            transition: all 0.2s;
         }
         input[type="text"]:focus, textarea:focus {
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26,115,232,0.1);
         }
         button {
-            padding: 12px;
-            margin-top: 15px;
-            background-color: #3498db;
+            padding: 12px 20px;
+            background-color: #1a73e8;
             color: white;
             border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.2s, transform 0.1s;
+            margin-top: 15px;
         }
-        button:hover {
-            background-color: #2980b9;
-        }
-        .btn-success {
-            background-color: #2ecc71;
-        }
-        .btn-success:hover {
-            background-color: #27ae60;
-        }
-        .btn-warning {
-            background-color: #f39c12;
-        }
-        .btn-warning:hover {
-            background-color: #d68910;
-        }
+        button:active { transform: scale(0.98); }
+        button:hover { background-color: #1765cc; }
+
+        .btn-success { background-color: #34a853; }
+        .btn-success:hover { background-color: #2d8e47; }
+        .btn-warning { background-color: #fbbc04; color: #3c4043; }
+        .btn-warning:hover { background-color: #f1b000; }
+        .btn-orange { background-color: #e67e22; }
+        .btn-orange:hover { background-color: #d35400; }
+
         .btn-group {
             display: flex;
-            gap: 10px;
-            margin-top: auto; /* Push buttons to the bottom */
+            gap: 12px;
+            margin-top: 15px;
         }
         .btn-group button {
             flex: 1;
-            margin-top: 15px;
+            margin-top: 0;
         }
         .footer {
-            margin-top: 30px;
+            margin-top: 40px;
             text-align: center;
             font-size: 13px;
-            color: #888;
+            color: #70757a;
         }
-        /* 响应式：屏幕较小时垂直排列 */
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
+        @media (max-width: 900px) {
+            .container { flex-direction: column; }
+            .panel { min-width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <h2>节点 IP/域名 批量替换与处理工具</h2>
+    <h1 class="main-title">优选 IP/域名 批量处理工具</h1>
 
-    <div class="container">
-        <div class="panel">
-            <h3 style="margin-top:0; color:#2c3e50;">1. 数据输入</h3>
-            <label for="baseLink">🔗 原始节点链接:</label>
-            <input type="text" id="baseLink" placeholder="请粘贴完整的原始节点链接 (例如 vless://...)">
-
-            <label for="ipList">📝 优选 IP 或 域名 (每行一个):</label>
-            <textarea id="ipList" rows="12" placeholder="请粘贴需要替换进去的 IP 或域名列表，每行一个..."></textarea>
-
-            <button onclick="generateLinks()">⚡ 一键批量替换生成 ➡️</button>
-        </div>
-
-        <div class="panel">
-            <h3 style="margin-top:0; color:#2c3e50;">2. 结果处理</h3>
-            <label for="output">✅ 生成结果 / 待处理文本:</label>
-            <textarea id="output" rows="14" placeholder="这里会显示生成的节点。你也可以直接在这里粘贴文本进行去重处理..."></textarea>
-
-            <div class="btn-group">
-                <button class="btn-success" id="copyBtn" onclick="copyResult()">📋 一键复制结果</button>
-                <button class="btn-warning" onclick="deduplicate()">🧹 文本去重</button>
+    <!-- 基础替换部分 -->
+    <div class="section-box section-basic">
+        <div class="section-title">📦 基础替换模式 (保留原始参数)</div>
+        <div class="container">
+            <div class="panel">
+                <label for="baseLink">🔗 原始节点分享链接:</label>
+                <input type="text" id="baseLink" placeholder="粘贴原始链接，例如 vless://...">
+                
+                <label for="ipList">📝 优选地址列表 (每行一个 IP 或域名):</label>
+                <textarea id="ipList" rows="10" placeholder="粘贴需要替换进去的 IP 或域名..."></textarea>
+                
+                <button onclick="generateLinks()">⚡ 开始基础生成 (仅替换地址) ➡️</button>
+            </div>
+            
+            <div class="panel">
+                <label for="output">✅ 基础生成结果 (可手动在此去重):</label>
+                <textarea id="output" rows="14" placeholder="生成的节点结果将显示在此。您也可以在此粘贴文本并点击下方的去重按钮。"></textarea>
+                
+                <div class="btn-group">
+                    <button class="btn-success" id="copyBtn" onclick="copyResult('output', 'copyBtn')">📋 复制基础结果</button>
+                    <button class="btn-warning" onclick="deduplicate('output')">🧹 文本去重</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="footer">支持标准分享链接批量替换（精准识别 @ 到 :端口 号之间的部分） | 结果框支持手动输入并去重</div>
+    <!-- 高级生成部分 -->
+    <div class="section-box section-advanced">
+        <div class="section-title">🚀 高级优选模式 (ED算法 / 多地区 / 自动重命名)</div>
+        <div class="container">
+            <div class="panel">
+                <label for="advBaseLink">🔗 原始节点链接 (推荐包含 TLS 配置):</label>
+                <input type="text" id="advBaseLink" placeholder="粘贴原始链接，生成器会保留 SNI 等原有参数...">
+                
+                <label for="advIpList">📝 优选地址列表 (每行一个 IP 或域名):</label>
+                <textarea id="advIpList" rows="8" placeholder="粘贴 IP 或域名列表..."></textarea>
+                
+                <button class="btn-orange" onclick="generateAdvancedLinks()">🔥 批量生成多地区优选节点 ➡️</button>
+            </div>
+            
+            <div class="panel">
+                <label for="advOutput">✅ 高级生成结果 (带地区路径及重命名):</label>
+                <textarea id="advOutput" rows="12" placeholder="生成的带地区参数(wk=...)和自动重命名(#香港_⚡_ED-HK...)的节点列表。"></textarea>
+                
+                <div class="btn-group">
+                    <button class="btn-success" id="copyAdvBtn" onclick="copyResult('advOutput', 'copyAdvBtn')">📋 复制高级结果</button>
+                    <button class="btn-warning" onclick="deduplicate('advOutput')">🧹 结果去重</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        保留原始参数逻辑：智能识别协议、UUID、现有查询参数并合并。支持 VLESS / VMESS / Trojan 等主流分享格式。
+    </div>
 
     <script>
-        // 批量替换生成功能
+        const regionMap = {
+            'HK': '🇭🇰香港', 'US': '🇺🇸美国', 'SG': '🇸🇬新加坡', 'KR': '🇰🇷韩国', 'JP': '🇯🇵日本',
+            'DE': '🇩🇪德国', 'SE': '瑞典', 'NL': '🇳🇱荷兰', 'FI': '🇫🇮芬兰', 'GB': '🇬🇧英国'
+        };
+
+        // 基础生成：仅替换 IP
         function generateLinks() {
             const baseLink = document.getElementById('baseLink').value.trim();
             const ipText = document.getElementById('ipList').value.trim();
             const outputField = document.getElementById('output');
 
             if (!baseLink || !ipText) {
-                alert('请确保左侧已填入原始节点链接和 IP/域名列表！');
+                alert('请填写原始链接和 IP 列表！');
                 return;
             }
 
             const ipList = ipText.split('\n').map(item => item.trim()).filter(item => item !== '');
-            const regex = /(.+?@)([^:]+)(:\d+.*)/;
+            const regex = /^([^:]+:\/\/)([^@]+@)([^:?#\/]+)(.*)$/;
 
             if (!regex.test(baseLink)) {
-                alert('原始节点格式无法识别！请确保链接中包含 "@" 以及 ":" 后跟端口号 (例如 :443)。');
+                alert('原始链接格式无法识别！');
                 return;
             }
 
-            const results = ipList.map(ip => {
-                return baseLink.replace(regex, `$1${ip}$3`);
+            const match = baseLink.match(regex);
+            const prefix = match[1] + match[2];
+            const suffix = match[4];
+
+            const results = ipList.map(ip => `${prefix}${ip}${suffix}`);
+            outputField.value = results.join('\n');
+            deduplicate('output', true);
+        }
+
+        // 高级生成：全量参数保留 + 地区拼接 + 重命名
+        function generateAdvancedLinks() {
+            const baseLink = document.getElementById('advBaseLink').value.trim();
+            const ipText = document.getElementById('advIpList').value.trim();
+            const outputField = document.getElementById('advOutput');
+
+            if (!baseLink || !ipText) {
+                alert('请填写原始链接和 IP 列表！');
+                return;
+            }
+
+            const ipList = ipText.split('\n').map(item => item.trim()).filter(item => item !== '');
+            // 正则：1协议, 2账号@, 3地址, 4端口, 5路径, 6查询参数, 7备注
+            const regex = /^([^:]+:\/\/)([^@]+@)([^:?#\/]+)(:\d+)?([^?#]*)(\?[^#]*)?(#.*)?$/;
+
+            if (!regex.test(baseLink)) {
+                alert('原始格式无法识别！请确保包含协议和 @ 符号。');
+                return;
+            }
+
+            const match = baseLink.match(regex);
+            const protocol = match[1];
+            const account = match[2];
+            const port = match[4] || '';
+            const path = match[5] || '';
+            const query = match[6] || '';
+
+            let results = [];
+            ipList.forEach(ip => {
+                Object.keys(regionMap).forEach(region => {
+                    const cnName = regionMap[region];
+                    const separator = query ? '&' : '?';
+                    const regionParams = `${separator}ed=2048&wk=${region}`;
+                    const newName = `${cnName}_⚡_ED-${region}`;
+                    results.push(`${protocol}${account}${ip}${port}${path}${query}${regionParams}#${newName}`);
+                });
             });
 
-            // 如果右侧框内已有内容，选择追加还是覆盖（这里设定为覆盖，符合多数习惯）
             outputField.value = results.join('\n');
-            
-            // 自动去重一次（可选，防止输入的IP列表自带重复项）
-            deduplicate(true);
+            deduplicate('advOutput', true);
         }
 
-        // 去重功能
-        function deduplicate(isSilent = false) {
-            const outputField = document.getElementById('output');
-            const text = outputField.value;
-
-            if (!text.trim()) {
-                if (!isSilent) alert('结果框内没有内容，无法去重。');
-                return;
-            }
-
-            // 按行分割，去除首尾空格，过滤空行
-            const lines = text.split('\n').map(line => line.trim()).filter(line => line !== '');
-            const originalLength = lines.length;
-            
-            // 使用 Set 进行去重
-            const uniqueLines = [...new Set(lines)];
-            const uniqueLength = uniqueLines.length;
-
-            // 回写去重后的结果
-            outputField.value = uniqueLines.join('\n');
-
-            // 提示清理结果
-            if (!isSilent) {
-                const removedCount = originalLength - uniqueLength;
-                if (removedCount > 0) {
-                    alert(`✅ 去重完成！共清理了 ${removedCount} 条重复记录，剩余 ${uniqueLength} 条。`);
-                } else {
-                    alert('✅ 当前内容无重复项。');
-                }
-            }
-        }
-
-        // 一键复制功能
-        function copyResult() {
-            const outputField = document.getElementById('output');
-            const copyBtn = document.getElementById('copyBtn');
-            
-            if (!outputField.value.trim()) {
-                alert('没有内容可以复制！');
-                return;
-            }
+        // 通用复制
+        function copyResult(fieldId, btnId) {
+            const outputField = document.getElementById(fieldId);
+            const copyBtn = document.getElementById(btnId);
+            if (!outputField.value.trim()) { alert('内容为空！'); return; }
 
             outputField.select();
-            outputField.setSelectionRange(0, 99999); // 兼容移动端
-
+            outputField.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(outputField.value).then(() => {
                 const originalText = copyBtn.innerText;
-                copyBtn.innerText = '✔️ 复制成功！';
-                copyBtn.style.backgroundColor = '#27ae60';
-                
+                copyBtn.innerText = '✔️ 已复制';
+                const originalBg = copyBtn.style.backgroundColor;
+                copyBtn.style.backgroundColor = '#2c3e50';
                 setTimeout(() => {
                     copyBtn.innerText = originalText;
-                    copyBtn.style.backgroundColor = ''; // 恢复默认颜色
+                    copyBtn.style.backgroundColor = originalBg;
                 }, 2000);
-            }).catch(err => {
-                alert('复制失败，请手动全选复制。');
             });
+        }
+
+        // 通用去重
+        function deduplicate(fieldId, isSilent = false) {
+            const outputField = document.getElementById(fieldId);
+            const text = outputField.value;
+            if (!text.trim()) return;
+
+            const lines = text.split('\n').map(line => line.trim()).filter(line => line !== '');
+            const uniqueLines = [...new Set(lines)];
+            outputField.value = uniqueLines.join('\n');
+
+            if (!isSilent) {
+                const removed = lines.length - uniqueLines.length;
+                alert(removed > 0 ? `✅ 已清理 ${removed} 条重复内容` : '✅ 无重复项');
+            }
         }
     </script>
 </body>
