@@ -238,14 +238,49 @@
             const path = match[5] || '';
             const query = match[6] || '';
 
+            // --- 核心修复：合并路径与参数，处理 URL 编码并分离 ed/wk 逻辑 ---
+            const pathQuery = path + query;
+
             let results = [];
             ipList.forEach(ip => {
                 Object.keys(regionMap).forEach(region => {
                     const cnName = regionMap[region];
-                    const separator = query ? '&' : '?';
-                    const regionParams = `${separator}ed=2048&wk=${region}`;
+                    let newPathQuery = pathQuery;
+
+                    // 兼容常规等号 (=) 及 URL 编码等号 (%3D)
+                    const hasWk = /(wk(?:=|%3D))/i.test(newPathQuery);
+                    const hasEd = /(ed(?:=|%3D))/i.test(newPathQuery);
+
+                    if (hasEd) {
+                        newPathQuery = newPathQuery.replace(/(ed(?:=|%3D))[a-zA-Z0-9_\-]*/gi, '$12048');
+                    } else {
+                        if (/path=/i.test(newPathQuery)) {
+                            newPathQuery = newPathQuery.replace(/(path=)([^&]*)/i, function(match, p1, p2) {
+                                const separator = (p2.includes('?') || p2.includes('%3F')) ? '%26' : '%3F';
+                                return p1 + p2 + separator + "ed%3D2048";
+                            });
+                        } else {
+                            const separator = newPathQuery.includes('?') ? '&' : '?';
+                            newPathQuery += `${separator}ed=2048`;
+                        }
+                    }
+
+                    if (hasWk) {
+                        newPathQuery = newPathQuery.replace(/(wk(?:=|%3D))[a-zA-Z0-9_\-]*/gi, '$1' + region);
+                    } else {
+                        if (/path=/i.test(newPathQuery)) {
+                            newPathQuery = newPathQuery.replace(/(path=)([^&]*)/i, function(match, p1, p2) {
+                                const separator = (p2.includes('?') || p2.includes('%3F')) ? '%26' : '%3F';
+                                return p1 + p2 + separator + "wk%3D" + region;
+                            });
+                        } else {
+                            const separator = newPathQuery.includes('?') ? '&' : '?';
+                            newPathQuery += `${separator}wk=${region}`;
+                        }
+                    }
+
                     const newName = `${cnName}_⚡_ED-${region}`;
-                    results.push(`${protocol}${account}${ip}${port}${path}${query}${regionParams}#${newName}`);
+                    results.push(`${protocol}${account}${ip}${port}${newPathQuery}#${newName}`);
                 });
             });
 
