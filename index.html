@@ -115,6 +115,101 @@
             .container { flex-direction: column; }
             .panel { min-width: 100%; }
         }
+        
+        /* 高级配置面板样式 */
+        .config-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px dashed #dee2e6;
+            align-items: flex-start;
+        }
+        .config-item {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 180px;
+        }
+        .config-item label {
+            margin: 0 0 5px 0;
+            color: #495057;
+        }
+        .region-group {
+            margin-top: 12px;
+            padding: 12px;
+            background: #fff;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+        }
+        .region-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .region-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 8px;
+        }
+        .region-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+        .region-item input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500 !important;
+            margin: 0 !important;
+            cursor: pointer;
+            color: #333;
+        }
+        .btn-mini {
+            padding: 4px 10px;
+            font-size: 12px;
+            margin-top: 0;
+            background-color: #6c757d;
+            border-radius: 4px;
+        }
+        .inline-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .inline-checkbox input {
+            width: 18px;
+            height: 18px;
+        }
+        .alert-info {
+            background-color: #fff8e1;
+            color: #856404;
+            border: 1px solid #ffe082;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            line-height: 1.6;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .alert-info b {
+            color: #d84315;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
@@ -149,16 +244,81 @@
 
     <!-- 高级生成部分 -->
     <div class="section-box section-advanced">
-        <div class="section-title">🚀 高级优选模式 (ED算法 / 多地区 / 自动重命名)</div>
+        <div class="section-title">🚀 高级优选模式 <small style="color:#34a853; font-size:12px;">(V7-Final-完美修复版)</small></div>
         <div class="container">
             <div class="panel">
                 <label for="advBaseLink">🔗 原始节点链接 (推荐包含 TLS 配置):</label>
                 <input type="text" id="advBaseLink" placeholder="粘贴原始链接，生成器会保留 SNI 等原有参数...">
                 
                 <label for="advIpList">📝 优选地址列表 (每行一个 IP 或域名):</label>
-                <textarea id="advIpList" rows="8" placeholder="粘贴 IP 或域名列表..."></textarea>
+                <textarea id="advIpList" rows="6" placeholder="粘贴 IP 或域名列表..."></textarea>
+
+                <!-- 互斥与组合提示 -->
+                <div class="alert-info">
+                    <div>
+                        <b>📢 配置说明：</b><br>
+                        1. <strong>ProxyIP (p)</strong> 与 <strong>地区 (wk)</strong> 互斥。设置 p 后将忽略 wk 匹配逻辑，直接使用指定的 ProxyIP。<br>
+                        2. <strong>SOCKS5 (s)</strong> 可与地区 wk 搭配使用（让选定的地区节点走 SOCKS5 转发）。<br>
+                        3. <strong>ED 端口</strong> 默认为 2048，通常无需修改。
+                    </div>
+                </div>
+
+                <!-- 高级参数控制 -->
+                <div class="config-grid">
+                    <div class="config-item" style="flex: 0 0 100px; min-width: 100px;">
+                        <label for="advEd">算法端口 (ed):</label>
+                        <input type="text" id="advEd" value="2048" placeholder="默认 2048">
+                    </div>
+                    <div class="config-item" style="flex: 1; min-width: 160px;">
+                        <label for="advProxyIP">指定 ProxyIP (p):</label>
+                        <input type="text" id="advProxyIP" placeholder="可选，例如 1.1.1.1">
+                    </div>
+                    <div class="config-item" style="flex: 2; min-width: 280px;">
+                        <label for="advCustomName">自定义名称 (仅ProxyIP):</label>
+                        <div style="display: flex; gap: 5px;">
+                            <select id="advFlag" style="padding: 10px 5px; border-radius: 8px; border: 1px solid #dadce0; outline: none; font-size: 14px; cursor: pointer;">
+                                <option value="🌐">🌐 默认</option>
+                                <option value="🇭🇰">🇭🇰 香港</option>
+                                <option value="🇺🇸">🇺🇸 美国</option>
+                                <option value="🇸🇬">🇸🇬 新加坡</option>
+                                <option value="🇰🇷">🇰🇷 韩国</option>
+                                <option value="🇯🇵">🇯🇵 日本</option>
+                                <option value="🇩🇪">🇩🇪 德国</option>
+                                <option value="🇸🇪">🇸🇪 瑞典</option>
+                                <option value="🇳🇱">🇳🇱 荷兰</option>
+                                <option value="🇫🇮">🇫🇮 芬兰</option>
+                                <option value="🇬🇧">🇬🇧 英国</option>
+                            </select>
+                            <input type="text" id="advCustomName" placeholder="默认: 优选节点" style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="config-item" style="flex: 1.5; min-width: 220px;">
+                        <label for="advSocks5">指定 SOCKS5 (s):</label>
+                        <input type="text" id="advSocks5" placeholder="user:pass@host:port">
+                    </div>
+                    <div class="config-item" style="flex: 1; min-width: 150px; justify-content: center;">
+                        <div class="inline-checkbox">
+                            <input type="checkbox" id="advRm">
+                            <label for="advRm" class="checkbox-label">移除海外清理 (rm=no)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 地区勾选 -->
+                <div class="region-group">
+                    <div class="region-header">
+                        <label style="margin:0">🌍 选择生成的地区 (wk):</label>
+                        <div style="display:flex; gap:5px;">
+                            <button class="btn-mini" onclick="toggleAllRegions(true)">全选</button>
+                            <button class="btn-mini" onclick="toggleAllRegions(false)">清空</button>
+                        </div>
+                    </div>
+                    <div id="regionList" class="region-list">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
                 
-                <button class="btn-orange" onclick="generateAdvancedLinks()">🔥 批量生成多地区优选节点 ➡️</button>
+                <button class="btn-orange" onclick="generateAdvancedLinks()">🔥 批量生成高级优选节点 ➡️</button>
             </div>
             
             <div class="panel">
@@ -180,8 +340,28 @@
     <script>
         const regionMap = {
             'HK': '🇭🇰香港', 'US': '🇺🇸美国', 'SG': '🇸🇬新加坡', 'KR': '🇰🇷韩国', 'JP': '🇯🇵日本',
-            'DE': '🇩🇪德国', 'SE': '瑞典', 'NL': '🇳🇱荷兰', 'FI': '🇫🇮芬兰', 'GB': '🇬🇧英国'
+            'DE': '🇩🇪德国', 'SE': '🇸🇪瑞典', 'NL': '🇳🇱荷兰', 'FI': '🇫🇮芬兰', 'GB': '🇬🇧英国'
         };
+
+        // 动态生成地区复选框
+        function initRegions() {
+            const container = document.getElementById('regionList');
+            Object.keys(regionMap).forEach(code => {
+                const div = document.createElement('div');
+                div.className = 'region-item';
+                div.innerHTML = `
+                    <input type="checkbox" id="reg_${code}" value="${code}" checked>
+                    <label for="reg_${code}" class="checkbox-label">${regionMap[code]}</label>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleAllRegions(selected) {
+            document.querySelectorAll('#regionList input[type="checkbox"]').forEach(cb => cb.checked = selected);
+        }
+
+        window.onload = initRegions;
 
         // 基础生成：仅替换 IP
         function generateLinks() {
@@ -211,21 +391,36 @@
             deduplicate('output', true);
         }
 
-        // 高级生成：全量参数保留 + 地区拼接 + 重命名
+        // 高级生成：全量参数保留 + 地区/单点参数 + 重命名
         function generateAdvancedLinks() {
             const baseLink = document.getElementById('advBaseLink').value.trim();
             const ipText = document.getElementById('advIpList').value.trim();
             const outputField = document.getElementById('advOutput');
+
+            // 获取高级参数并清洗 (剔除末尾多余斜杠)
+            const edValue = document.getElementById('advEd').value.trim() || '2048';
+            const proxyIP = document.getElementById('advProxyIP').value.trim().replace(/\/+$/, '');
+            const customName = document.getElementById('advCustomName').value.trim();
+            const flagVal = document.getElementById('advFlag').value;
+            const socks5 = document.getElementById('advSocks5').value.trim().replace(/\/+$/, '');
+            const isRm = document.getElementById('advRm').checked;
 
             if (!baseLink || !ipText) {
                 alert('请填写原始链接和 IP 列表！');
                 return;
             }
 
-            const ipList = ipText.split('\n').map(item => item.trim()).filter(item => item !== '');
-            // 正则：1协议, 2账号@, 3地址, 4端口, 5路径, 6查询参数, 7备注
-            const regex = /^([^:]+:\/\/)([^@]+@)([^:?#\/]+)(:\d+)?([^?#]*)(\?[^#]*)?(#.*)?$/;
+            // 强力清洗：只提取每行开头的 IP 或域名，忽略后面的测速、名称等额外信息
+            const ipList = ipText.split('\n').map(line => {
+                const trimmed = line.trim().replace(/\/+$/, '');
+                if (!trimmed) return null;
+                // 匹配开头的 IP (含 IPv6) 或域名
+                const match = trimmed.match(/^([a-zA-Z0-9\-\.\:]+)/);
+                return match ? match[1] : null;
+            }).filter(ip => ip !== null);
 
+            // 最核心的正则修复：将 # 备注名（第6组）单独剥离，绝对不能让它混进 query 参数中！
+            const regex = /^([^:]+:\/\/)([^@]+@)([^:?#\/]+)(:\d+)?([^#]*)(#.*)?$/;
             if (!regex.test(baseLink)) {
                 alert('原始格式无法识别！请确保包含协议和 @ 符号。');
                 return;
@@ -235,57 +430,110 @@
             const protocol = match[1];
             const account = match[2];
             const port = match[4] || '';
-            const path = match[5] || '';
-            const query = match[6] || '';
+            const pathQuery = match[5] || '';  // 这里现在绝对干净，只包含 /path?query，不包含任何 #名称
 
-            // --- 核心修复：合并路径与参数，处理 URL 编码并分离 ed/wk 逻辑 ---
-            const pathQuery = path + query;
+            // 获取选中的地区
+            const selectedRegions = Array.from(document.querySelectorAll('#regionList input:checked')).map(cb => cb.value);
 
             let results = [];
-            ipList.forEach(ip => {
-                Object.keys(regionMap).forEach(region => {
-                    const cnName = regionMap[region];
-                    let newPathQuery = pathQuery;
-
-                    // 兼容常规等号 (=) 及 URL 编码等号 (%3D)
-                    const hasWk = /(wk(?:=|%3D))/i.test(newPathQuery);
-                    const hasEd = /(ed(?:=|%3D))/i.test(newPathQuery);
-
-                    if (hasEd) {
-                        newPathQuery = newPathQuery.replace(/(ed(?:=|%3D))[a-zA-Z0-9_\-]*/gi, '$12048');
-                    } else {
-                        if (/path=/i.test(newPathQuery)) {
-                            newPathQuery = newPathQuery.replace(/(path=)([^&]*)/i, function(match, p1, p2) {
-                                const separator = (p2.includes('?') || p2.includes('%3F')) ? '%26' : '%3F';
-                                return p1 + p2 + separator + "ed%3D2048";
-                            });
-                        } else {
-                            const separator = newPathQuery.includes('?') ? '&' : '?';
-                            newPathQuery += `${separator}ed=2048`;
-                        }
-                    }
-
-                    if (hasWk) {
-                        newPathQuery = newPathQuery.replace(/(wk(?:=|%3D))[a-zA-Z0-9_\-]*/gi, '$1' + region);
-                    } else {
-                        if (/path=/i.test(newPathQuery)) {
-                            newPathQuery = newPathQuery.replace(/(path=)([^&]*)/i, function(match, p1, p2) {
-                                const separator = (p2.includes('?') || p2.includes('%3F')) ? '%26' : '%3F';
-                                return p1 + p2 + separator + "wk%3D" + region;
-                            });
-                        } else {
-                            const separator = newPathQuery.includes('?') ? '&' : '?';
-                            newPathQuery += `${separator}wk=${region}`;
-                        }
-                    }
-
-                    const newName = `${cnName}_⚡_ED-${region}`;
-                    results.push(`${protocol}${account}${ip}${port}${newPathQuery}#${newName}`);
-                });
+            ipList.forEach((ip, index) => {
+                // 如果有单点 ProxyIP，则优先使用 ProxyIP，不遍历地区 (根据截图提示 p 生效后 wk 失效)
+                if (proxyIP) {
+                    let newPathQuery = buildPathQuery(pathQuery, { ed: edValue, p: proxyIP, s: socks5, rm: isRm });
+                    // ProxyIP 模式：使用自定义名称与国旗，多个 IP 时追加序号
+                    const baseName = customName ? customName : `优选节点`;
+                    const nameWithFlag = flagVal ? `${flagVal} ${baseName}` : baseName;
+                    const name = ipList.length > 1 ? `${nameWithFlag}_${index + 1}` : nameWithFlag;
+                    
+                    let finalUrl = `${protocol}${account}${ip}${port}${newPathQuery}`.replace(/\/+(\?|&|#|$)/g, '$1');
+                    results.push(`${finalUrl}#${name}`);
+                } 
+                // 否则遍历选中的地区
+                else if (selectedRegions.length > 0) {
+                    selectedRegions.forEach(region => {
+                        const cnName = regionMap[region];
+                        let newPathQuery = buildPathQuery(pathQuery, { ed: edValue, wk: region, s: socks5, rm: isRm });
+                        const newName = `${cnName}_⚡_ED-${region}`;
+                        
+                        // 最终拼接：确保在 # 之前没有任何冗余斜杠
+                        let finalUrl = `${protocol}${account}${ip}${port}${newPathQuery}`.replace(/\/+(\?|&|#|$)/g, '$1');
+                        results.push(`${finalUrl}#${newName}`);
+                    });
+                }
+                // 如果既没 ProxyIP 也没选地区
+                else {
+                    let newPathQuery = buildPathQuery(pathQuery, { ed: edValue, s: socks5, rm: isRm });
+                    let finalUrl = `${protocol}${account}${ip}${port}${newPathQuery}`.replace(/\/+(\?|&|#|$)/g, '$1');
+                    // 默认模式：同样启用名称、国旗和多 IP 序号区分
+                    const baseName = customName ? customName : `优选节点`;
+                    const nameWithFlag = flagVal ? `${flagVal} ${baseName}` : baseName;
+                    const name = ipList.length > 1 ? `${nameWithFlag}_${index + 1}` : nameWithFlag;
+                    
+                    results.push(`${finalUrl}#${name}`);
+                }
             });
 
             outputField.value = results.join('\n');
             deduplicate('advOutput', true);
+        }
+
+        // 核心参数构建辅助函数 (顶级平铺 + Path 编码注入)
+        function buildPathQuery(originalPathQuery, params) {
+            // 强力去斜杠：对结尾反反复复地切，直到切成平级
+            const superClean = (s) => {
+                if (!s) return "";
+                let val = String(s).trim();
+                while (true) {
+                    let old = val;
+                    val = val.replace(/[\/]+$/, "").replace(/%2f$/i, "").replace(/%252f$/i, "");
+                    if (val === old) break;
+                }
+                return val;
+            };
+
+            // 原始路径清理：取消强行塞斜杠 / 的流氓行为
+            let res = originalPathQuery || '';
+            res = superClean(res);
+
+            // 1. 构建优选部分
+            const advList = [];
+            if (params.ed) advList.push(`ed=${superClean(params.ed)}`);
+            if (params.p) advList.push(`p=${superClean(params.p)}`);
+            if (params.wk) advList.push(`wk=${superClean(params.wk)}`);
+            if (params.s) advList.push(`s=${superClean(params.s)}`);
+            if (params.rm) advList.push(`rm=no`);
+            const advStr = advList.join('&');
+
+            // 2. 统一设置顶级参数
+            const setTopParam = (url, key, value) => {
+                const reg = new RegExp(`([?&])${key}(?:=|%3D)[^&]*`, 'i');
+                if (reg.test(url)) return url.replace(reg, `$1${key}=${value}`);
+                // 如果当前没有 ?，就加上 ?，否则加上 &
+                return url + (url.includes('?') ? '&' : '?') + `${key}=${value}`;
+            };
+
+            // 3. 注入 path= (兼容 WS 路径传参)
+            if (/path=/i.test(res)) {
+                res = res.replace(/(path=)([^&]*)/i, function(m, p1, p2) {
+                    let decodedPath = superClean(decodeURIComponent(p2));
+                    // 内部路径通常需要 / 开头
+                    if (!decodedPath.startsWith('/')) decodedPath = '/' + decodedPath;
+                    const sep = decodedPath.includes('?') ? '&' : '?';
+                    return p1 + encodeURIComponent(superClean(decodedPath + sep + advStr));
+                });
+            } else {
+                // 如果没有 path 字段，不去强行补充，仅在顶级平铺即可
+            }
+
+            // 4. 顶级也平铺一份
+            advList.forEach(kv => {
+                const [k, v] = kv.split('=');
+                res = setTopParam(res, k, v);
+            });
+
+            // 最终大杀器：如果有结尾干扰字符则抹除
+            res = res.replace(/(\?|&|\/)+$/, '');
+            return res;
         }
 
         // 通用复制
