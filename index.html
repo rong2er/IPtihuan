@@ -375,10 +375,10 @@
             }
 
             const ipList = ipText.split('\n').map(item => item.trim()).filter(item => item !== '');
-            const regex = /^([^:]+:\/\/)([^@]+@)([^:?#\/]+)(.*)$/;
+            const regex = /^([^:]+:\/\/)([^@]+@)(\[[^\]]+\]|[^:?#\/]+)(.*)$/;
 
             if (!regex.test(baseLink)) {
-                alert('原始链接格式无法识别！');
+                alert('原始链接格式无法识别！请确保包含协议和 @ 符号。');
                 return;
             }
 
@@ -386,7 +386,10 @@
             const prefix = match[1] + match[2];
             const suffix = match[4];
 
-            const results = ipList.map(ip => `${prefix}${ip}${suffix}`);
+            const results = ipList.map(ip => {
+                let formattedIp = ip.includes(':') && !ip.startsWith('[') ? `[${ip}]` : ip;
+                return `${prefix}${formattedIp}${suffix}`;
+            });
             outputField.value = results.join('\n');
             deduplicate('output', true);
         }
@@ -414,13 +417,13 @@
             const ipList = ipText.split('\n').map(line => {
                 const trimmed = line.trim().replace(/\/+$/, '');
                 if (!trimmed) return null;
-                // 匹配开头的 IP (含 IPv6) 或域名
-                const match = trimmed.match(/^([a-zA-Z0-9\-\.\:]+)/);
+                // 匹配开头的 IP (支持 [IPv6] 格式) 或域名
+                const match = trimmed.match(/^(\[[a-fA-F0-9\:\.]+\]|[a-zA-Z0-9\-\.\:]+)/);
                 return match ? match[1] : null;
             }).filter(ip => ip !== null);
 
-            // 最核心的正则修复：将 # 备注名（第6组）单独剥离，绝对不能让它混进 query 参数中！
-            const regex = /^([^:]+:\/\/)([^@]+@)([^:?#\/]+)(:\d+)?([^#]*)(#.*)?$/;
+            // 最核心的正则修复：提取 Host 组时兼容 IPv6 方括号结构，并剥离备注名
+            const regex = /^([^:]+:\/\/)([^@]+@)(\[[^\]]+\]|[^:?#\/]+)(:\d+)?([^#]*)(#.*)?$/;
             if (!regex.test(baseLink)) {
                 alert('原始格式无法识别！请确保包含协议和 @ 符号。');
                 return;
@@ -437,6 +440,9 @@
 
             let results = [];
             ipList.forEach((ip, index) => {
+                // 如果是 IPv6 且未带方括号，则自动补充
+                let formattedIp = ip.includes(':') && !ip.startsWith('[') ? `[${ip}]` : ip;
+
                 // 如果有单点 ProxyIP，则优先使用 ProxyIP，不遍历地区 (根据截图提示 p 生效后 wk 失效)
                 if (proxyIP) {
                     let newPathQuery = buildPathQuery(pathQuery, { ed: edValue, p: proxyIP, s: socks5, rm: isRm });
@@ -445,7 +451,7 @@
                     const nameWithFlag = flagVal ? `${flagVal} ${baseName}` : baseName;
                     const name = ipList.length > 1 ? `${nameWithFlag}_${index + 1}` : nameWithFlag;
                     
-                    let finalUrl = `${protocol}${account}${ip}${port}${newPathQuery}`.replace(/\/+(\?|&|#|$)/g, '$1');
+                    let finalUrl = `${protocol}${account}${formattedIp}${port}${newPathQuery}`.replace(/\/+(\?|&|#|$)/g, '$1');
                     results.push(`${finalUrl}#${name}`);
                 } 
                 // 否则遍历选中的地区
@@ -456,14 +462,14 @@
                         const newName = `${cnName}_⚡_ED-${region}`;
                         
                         // 最终拼接：确保在 # 之前没有任何冗余斜杠
-                        let finalUrl = `${protocol}${account}${ip}${port}${newPathQuery}`.replace(/\/+(\?|&|#|$)/g, '$1');
+                        let finalUrl = `${protocol}${account}${formattedIp}${port}${newPathQuery}`.replace(/\/+(\?|&|#|$)/g, '$1');
                         results.push(`${finalUrl}#${newName}`);
                     });
                 }
                 // 如果既没 ProxyIP 也没选地区
                 else {
                     let newPathQuery = buildPathQuery(pathQuery, { ed: edValue, s: socks5, rm: isRm });
-                    let finalUrl = `${protocol}${account}${ip}${port}${newPathQuery}`.replace(/\/+(\?|&|#|$)/g, '$1');
+                    let finalUrl = `${protocol}${account}${formattedIp}${port}${newPathQuery}`.replace(/\/+(\?|&|#|$)/g, '$1');
                     // 默认模式：同样启用名称、国旗和多 IP 序号区分
                     const baseName = customName ? customName : `优选节点`;
                     const nameWithFlag = flagVal ? `${flagVal} ${baseName}` : baseName;
@@ -491,45 +497,59 @@
                 return val;
             };
 
-            // 原始路径清理：取消强行塞斜杠 / 的流氓行为
             let res = originalPathQuery || '';
             res = superClean(res);
 
-            // 1. 构建优选部分
-            const advList = [];
-            if (params.ed) advList.push(`ed=${superClean(params.ed)}`);
-            if (params.p) advList.push(`p=${superClean(params.p)}`);
-            if (params.wk) advList.push(`wk=${superClean(params.wk)}`);
-            if (params.s) advList.push(`s=${superClean(params.s)}`);
-            if (params.rm) advList.push(`rm=no`);
-            const advStr = advList.join('&');
-
-            // 2. 统一设置顶级参数
-            const setTopParam = (url, key, value) => {
-                const reg = new RegExp(`([?&])${key}(?:=|%3D)[^&]*`, 'i');
-                if (reg.test(url)) return url.replace(reg, `$1${key}=${value}`);
-                // 如果当前没有 ?，就加上 ?，否则加上 &
-                return url + (url.includes('?') ? '&' : '?') + `${key}=${value}`;
+            // 1. 构建要注入的对象
+            const upParams = {};
+            if (params.ed) upParams['ed'] = superClean(params.ed);
+            if (params.p) upParams['p'] = superClean(params.p);
+            if (params.wk) upParams['wk'] = superClean(params.wk);
+            if (params.s) upParams['s'] = superClean(params.s);
+            if (params.rm) upParams['rm'] = 'no';
+            
+            // 通用参数更新合并方法 (支持解构去重)
+            const mergeParamsIntoStr = (baseStr, paramUpdates) => {
+                let parts = baseStr.split('?');
+                let pathPart = parts[0];
+                let queryPart = parts.slice(1).join('?'); // 防止 ? 多次出现导致截断
+                
+                let pairs = queryPart ? queryPart.split('&') : [];
+                let map = {};
+                let order = []; 
+                pairs.forEach(p => {
+                    if (!p) return;
+                    let idx = p.indexOf('=');
+                    let k = idx > -1 ? p.substring(0, idx) : p;
+                    let v = idx > -1 ? p.substring(idx + 1) : '';
+                    if (!map.hasOwnProperty(k)) order.push(k);
+                    map[k] = v; // 后覆盖前，确保如果存在多个旧参数也不重复
+                });
+                
+                for (let k in paramUpdates) {
+                    if (!map.hasOwnProperty(k)) order.push(k);
+                    map[k] = paramUpdates[k];
+                }
+                
+                let newQueryPart = order.map(k => `${k}=${map[k]}`).join('&');
+                return newQueryPart ? `${pathPart}?${newQueryPart}` : pathPart;
             };
 
-            // 3. 注入 path= (兼容 WS 路径传参)
+            // 2. 注入 path= (兼容 WS 路径传参)
             if (/path=/i.test(res)) {
                 res = res.replace(/(path=)([^&]*)/i, function(m, p1, p2) {
                     let decodedPath = superClean(decodeURIComponent(p2));
                     // 内部路径通常需要 / 开头
                     if (!decodedPath.startsWith('/')) decodedPath = '/' + decodedPath;
-                    const sep = decodedPath.includes('?') ? '&' : '?';
-                    return p1 + encodeURIComponent(superClean(decodedPath + sep + advStr));
+                    
+                    // 使用合并方法精确注入，防止内外出现像 &ed=2048&ed=2048 这样的冗余拼接
+                    let newDecodedPath = mergeParamsIntoStr(decodedPath, upParams);
+                    return p1 + encodeURIComponent(superClean(newDecodedPath));
                 });
-            } else {
-                // 如果没有 path 字段，不去强行补充，仅在顶级平铺即可
             }
 
-            // 4. 顶级也平铺一份
-            advList.forEach(kv => {
-                const [k, v] = kv.split('=');
-                res = setTopParam(res, k, v);
-            });
+            // 3. 顶级也平铺一份
+            res = mergeParamsIntoStr(res, upParams);
 
             // 最终大杀器：如果有结尾干扰字符则抹除
             res = res.replace(/(\?|&|\/)+$/, '');
