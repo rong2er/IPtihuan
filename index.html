@@ -10,8 +10,8 @@
             background-color: #f0f2f5;
             color: #333;
             max-width: 1300px;
-            margin: 20px auto;
-            padding: 20px;
+            margin: 5px auto;
+            padding: 5px 20px;
         }
         .main-title {
             text-align: center;
@@ -24,18 +24,18 @@
             background: #fff;
             border-radius: 12px;
             box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            margin-bottom: 30px;
-            padding: 25px;
+            margin-bottom: 15px;
+            padding: 15px;
             border: 1px solid #e1e4e8;
         }
         .section-title {
-            font-size: 20px;
+            font-size: 18px;
             color: #202124;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 10px;
-            padding-bottom: 10px;
+            padding-bottom: 5px;
             border-bottom: 2px solid #f1f3f4;
         }
         .section-basic { border-left: 6px solid #3498db; }
@@ -54,10 +54,10 @@
         }
         label {
             display: block;
-            margin: 12px 0 6px;
+            margin: 6px 0 3px;
             font-weight: 600;
             color: #5f6368;
-            font-size: 14px;
+            font-size: 13px;
         }
         input[type="text"], textarea {
             width: 100%;
@@ -119,9 +119,9 @@
         .config-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
-            margin: 15px 0;
-            padding: 15px;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px;
             background: #f8f9fa;
             border-radius: 8px;
             border: 1px dashed #dee2e6;
@@ -138,8 +138,8 @@
             color: #495057;
         }
         .region-group {
-            margin-top: 12px;
-            padding: 18px;
+            margin-top: 8px;
+            padding: 12px;
             background: #fff;
             border: 1px solid #e1e4e8;
             border-radius: 8px;
@@ -198,11 +198,11 @@
             background-color: #fff8e1;
             color: #856404;
             border: 1px solid #ffe082;
-            padding: 12px 16px;
+            padding: 8px 12px;
             border-radius: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             font-size: 13px;
-            line-height: 1.6;
+            line-height: 1.4;
             display: flex;
             align-items: flex-start;
             gap: 10px;
@@ -215,33 +215,7 @@
 </head>
 <body>
 
-    <h1 class="main-title">优选 IP/域名 批量处理工具</h1>
 
-    <!-- 基础替换部分 -->
-    <div class="section-box section-basic">
-        <div class="section-title">📦 基础替换模式 (保留原始参数)</div>
-        <div class="container">
-            <div class="panel">
-                <label for="baseLink">🔗 原始节点分享链接:</label>
-                <input type="text" id="baseLink" placeholder="粘贴原始链接，例如 vless://...">
-                
-                <label for="ipList">📝 优选地址列表 (每行一个 IP 或域名):</label>
-                <textarea id="ipList" rows="10" placeholder="粘贴需要替换进去的 IP 或域名..."></textarea>
-                
-                <button onclick="generateLinks()">⚡ 开始基础生成 (仅替换地址) ➡️</button>
-            </div>
-            
-            <div class="panel">
-                <label for="output">✅ 基础生成结果:</label>
-                <textarea id="output" rows="14" placeholder="结果将显示在此..."></textarea>
-                
-                <div class="btn-group">
-                    <button class="btn-success" id="copyBtn" onclick="copyResult('output', 'copyBtn')">📋 复制结果</button>
-                    <button class="btn-warning" onclick="deduplicate('output')">🧹 文本去重</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- 高级生成部分 -->
     <div class="section-box section-advanced">
@@ -326,6 +300,32 @@
         </div>
     </div>
 
+    <!-- 基础替换部分 -->
+    <div class="section-box section-basic">
+        <div class="section-title">📦 基础替换模式 (保留原始参数)</div>
+        <div class="container">
+            <div class="panel">
+                <label for="baseLink">🔗 原始节点分享链接:</label>
+                <input type="text" id="baseLink" placeholder="粘贴原始链接，例如 vless://...">
+                
+                <label for="ipList">📝 优选地址列表 (每行一个 IP 或域名):</label>
+                <textarea id="ipList" rows="10" placeholder="粘贴需要替换进去的 IP 或域名..."></textarea>
+                
+                <button onclick="generateLinks()">⚡ 开始基础生成 (仅替换地址) ➡️</button>
+            </div>
+            
+            <div class="panel">
+                <label for="output">✅ 基础生成结果:</label>
+                <textarea id="output" rows="14" placeholder="结果将显示在此..."></textarea>
+                
+                <div class="btn-group">
+                    <button class="btn-success" id="copyBtn" onclick="copyResult('output', 'copyBtn')">📋 复制结果</button>
+                    <button class="btn-warning" onclick="deduplicate('output')">🧹 文本去重</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="footer">
         支持协议解析与参数智能合并。© 2026 优选 IP 批量处理工具。
     </div>
@@ -380,57 +380,71 @@
             const text = textArea.value.trim();
             if (!text) return [];
 
-            // 1. 定义匹配规则
-            // IPv4: 4段数字，每段最多3位
+            const lines = text.split(/\r?\n/);
+            const ipList = [];
+            const set = new Set();
+
+            // 基础正则定义
             const ipv4Pattern = /(?:\d{1,3}\.){3}\d{1,3}/;
-            // IPv6: [....] 格式
             const ipv6Pattern = /\[[a-fA-F0-9:]+\]/;
-            // 域名: 至少包含一个点，后缀必须是字母且长度>=2
             const domainPattern = /(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}/;
             
-            // 组合正则: (IPv4|IPv6|域名)(:端口)?
-            // 使用全局匹配 g
-            const fullReg = new RegExp(`(?:(${ipv4Pattern.source})|(${ipv6Pattern.source})|(${domainPattern.source}))(?::(\\d+))?`, 'g');
-            
-            const set = new Set(), ipList = [];
-            let match;
-            
-            // 2. 全局搜索匹配项
-            while ((match = fullReg.exec(text)) !== null) {
-                let host = match[1] || match[2] || match[3];
-                let port = match[4] || "443";
-                
-                if (!host) continue;
+            // 组合正则用于在一行中寻找 Host (IP或域名)
+            const hostReg = new RegExp(`(${ipv4Pattern.source})|(${ipv6Pattern.source})|(${domainPattern.source})`, 'i');
 
-                // 3. 过滤干扰项
-                // 排除包含速度、延迟单位的干扰 (如 82.91MB, 59.71ms)
-                // 即使它们符合域名正则的一部分，也应该根据上下文剔除
-                const lowerHost = host.toLowerCase();
-                if (lowerHost.includes('mb') || lowerHost.includes('ms') || lowerHost.includes('kb') || lowerHost.includes('gb')) {
-                    continue;
-                }
+            for (let line of lines) {
+                line = line.trim();
+                if (!line) continue;
 
-                // 校验 IPv4 合法性 (0-255)
-                if (match[1]) {
-                    const parts = host.split('.');
-                    if (parts.some(p => parseInt(p) > 255)) continue;
-                }
+                const hostMatch = line.match(hostReg);
+                if (hostMatch) {
+                    let host = hostMatch[0];
+                    let rest = line.replace(host, ''); // 移除 host 寻找剩余部分的端口
+                    let port = "443"; // 默认端口
 
-                // 处理 IPv6 括号
-                if (host.includes(':') && !host.startsWith('[')) host = `[${host}]`;
-                
-                const key = `${host}:${port}`;
-                if (!set.has(key)) {
-                    set.add(key);
-                    ipList.push({
-                        host: host, 
-                        port: ':' + port, 
-                        display: host.replace(/[\[\]]/g, '') + ':' + port
-                    });
+                    // 1. 优先尝试强特征匹配 (冒号、井号、或者 "端口" 关键字后面的数字)
+                    let explicitPortMatch = rest.match(/(?::|#|端口)\s*(\d{1,5})(?![.\d])/i);
+                    if (explicitPortMatch) {
+                        port = explicitPortMatch[1];
+                    } else {
+                        // 2. 备选方案：寻找行内最后一个独立的数字块 (排除日期 2024-04-23 和 IP 段)
+                        const numbers = rest.match(/(?:^|[^.\d\-/])(\d{1,5})(?![.\d\-/])/g);
+                        if (numbers && numbers.length > 0) {
+                            // 提取纯数字并取最后一个
+                            const lastNumMatch = numbers[numbers.length - 1].match(/\d+/);
+                            if (lastNumMatch) {
+                                const val = parseInt(lastNumMatch[0]);
+                                if (val > 0 && val <= 65535) port = lastNumMatch[0];
+                            }
+                        }
+                    }
+
+                    // 3. 过滤干扰项
+                    const lowerHost = host.toLowerCase();
+                    if (lowerHost.includes('mb') || lowerHost.includes('ms') || lowerHost.includes('kb') || lowerHost.includes('gb')) continue;
+
+                    // IPv4 合法性校验 (0-255)
+                    if (hostMatch[1]) {
+                        const parts = host.split('.');
+                        if (parts.some(p => parseInt(p) > 255)) continue;
+                    }
+
+                    // IPv6 自动补括号
+                    if (host.includes(':') && !host.startsWith('[')) host = `[${host}]`;
+                    
+                    const key = `${host}:${port}`;
+                    if (!set.has(key)) {
+                        set.add(key);
+                        ipList.push({
+                            host: host, 
+                            port: ':' + port, 
+                            display: host.replace(/[\[\]]/g, '') + ':' + port
+                        });
+                    }
                 }
             }
             
-            // 4. 写回文本框（去重并格式化后的列表）
+            // 写回文本框（去重并格式化后的列表）
             if (ipList.length > 0) {
                 textArea.value = ipList.map(i => i.display).join('\n');
             }
