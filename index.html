@@ -116,26 +116,104 @@
             .panel { min-width: 100%; }
         }
         
+        /* 高级配置网格 */
         .config-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 10px 0;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border: 1px dashed #dee2e6;
-            align-items: flex-start;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e0e4e9;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
         .config-item {
             display: flex;
             flex-direction: column;
-            flex: 1;
-            min-width: 180px;
+            gap: 8px;
         }
         .config-item label {
-            margin: 0 0 5px 0;
-            color: #495057;
+            margin: 0;
+            color: #5f6368;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        /* 极致无缝组合框 */
+        .input-group {
+            display: flex;
+            align-items: stretch;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            background: #fff;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            height: 42px;
+        }
+        .input-group:hover {
+            border-color: #babbbe;
+        }
+        .input-group:focus-within {
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26,115,232,0.15);
+        }
+        .input-group select {
+            border: none;
+            background: #f1f3f4;
+            padding: 0 12px;
+            border-right: 1px solid #dadce0;
+            outline: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #3c4043;
+            margin: 0;
+            min-width: 85px;
+        }
+        .input-group input {
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            flex: 1;
+            margin: 0 !important;
+            height: 100% !important;
+        }
+
+        /* 现代选项胶囊 */
+        .option-pill {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            padding: 0 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #dadce0;
+            user-select: none;
+            height: 42px;
+            box-sizing: border-box;
+            width: 100%;
+            justify-content: center;
+            margin-top: 24px; /* 对齐 label 留出的空间 */
+        }
+        .option-pill:hover {
+            background: #f8f9fa;
+            border-color: #c0c2c4;
+        }
+        .option-pill input {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        .option-pill.active {
+            background: #e8f0fe;
+            border-color: #1a73e8;
+            color: #1a73e8;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(26,115,232,0.1);
         }
         .region-group {
             margin-top: 8px;
@@ -239,35 +317,39 @@
                 </div>
 
                 <div class="config-grid">
-                    <div class="config-item" style="flex: 0 0 100px;">
-                        <label for="advEd">ED端口:</label>
+                    <div class="config-item" style="max-width: 120px;">
+                        <label for="advEd">⚡ ED端口:</label>
                         <input type="text" id="advEd" value="2048">
                     </div>
-                    <div class="config-item" style="flex: 1;">
-                        <label for="advProxyIP">指定 ProxyIP:</label>
+                    
+                    <div class="config-item">
+                        <label for="advProxyIP">🛡️ 指定 ProxyIP:</label>
                         <input type="text" id="advProxyIP" placeholder="1.1.1.1">
                     </div>
-                    <div class="config-item" style="flex: 2;">
-                        <label for="advCustomName">自定义名称:</label>
-                        <div style="display: flex; gap: 5px;">
-                            <select id="advFlag" style="padding: 10px 5px; border-radius: 8px; border: 1px solid #dadce0;">
+
+                    <div class="config-item">
+                        <label for="advCustomName">🏷️ 自定义名称:</label>
+                        <div class="input-group">
+                            <select id="advFlag">
                                 <option value="🌐">🌐 默认</option>
                                 <option value="🇭🇰">🇭🇰 香港</option><option value="🇺🇸">🇺🇸 美国</option>
                                 <option value="🇸🇬">🇸🇬 新加坡</option><option value="🇰🇷">🇰🇷 韩国</option>
                                 <option value="🇯🇵">🇯🇵 日本</option><option value="🇩🇪">🇩🇪 德国</option>
                             </select>
-                            <input type="text" id="advCustomName" placeholder="默认: 优选节点" style="flex: 1;">
+                            <input type="text" id="advCustomName" placeholder="默认: 优选节点">
                         </div>
                     </div>
-                    <div class="config-item" style="flex: 1.5;">
-                        <label for="advSocks5">SOCKS5:</label>
+
+                    <div class="config-item">
+                        <label for="advSocks5">🔗 SOCKS5 转发:</label>
                         <input type="text" id="advSocks5" placeholder="user:pass@host:port">
                     </div>
-                    <div class="config-item" style="flex: 0 0 160px; justify-content: center;">
-                        <div class="inline-checkbox">
-                            <input type="checkbox" id="advRm">
-                            <label for="advRm" class="checkbox-label">移除清理 (rm=no)</label>
-                        </div>
+
+                    <div class="config-item" style="justify-content: flex-end;">
+                        <label class="option-pill" id="rmLabel">
+                            <input type="checkbox" id="advRm" onchange="this.parentElement.classList.toggle('active', this.checked)">
+                            <span>关闭地区智能匹配 (rm=no)</span>
+                        </label>
                     </div>
                 </div>
 
@@ -487,10 +569,17 @@
                 } else if (regions.length > 0) {
                     regions.forEach(r => {
                         let nPQ = buildPathQuery(pathQ, { ed: params.ed, wk: r, s: params.s, rm: params.rm });
-                        results.push(`${protocol}${account}${item.host}${item.port}${nPQ}#${regionMap[r]}_⚡_ED-${r}`);
+                        const name = ipList.length > 1 ? `${params.flag} ${params.name}_${r}_${index + 1}` : `${params.flag} ${params.name}_${r}`;
+                        results.push(`${protocol}${account}${item.host}${item.port}${nPQ}#${name}`);
                     });
                 } else {
-                    let nPQ = buildPathQuery(pathQ, { ed: params.ed, s: params.s, rm: params.rm });
+                    let nPQ = buildPathQuery(pathQ, { 
+                        ed: params.ed, 
+                        s: params.s, 
+                        rm: params.rm,
+                        p: "", 
+                        wk: "" 
+                    });
                     const name = ipList.length > 1 ? `${params.flag} ${params.name}_${index + 1}` : `${params.flag} ${params.name}`;
                     results.push(`${protocol}${account}${item.host}${item.port}${nPQ}#${name}`);
                 }
@@ -503,11 +592,13 @@
             const clean = (s) => String(s || '').trim().replace(/\/+$/, "");
             let res = clean(base);
             const updates = {};
-            if (u.ed) updates['ed'] = clean(u.ed);
-            if (u.p) updates['p'] = clean(u.p);
-            if (u.wk) updates['wk'] = clean(u.wk);
-            if (u.s) updates['s'] = clean(u.s);
-            if (u.rm) updates['rm'] = 'no';
+            
+            // 使用 hasOwnProperty 允许传递空字符串以执行删除逻辑
+            if (u.hasOwnProperty('ed') && u.ed !== undefined) updates['ed'] = clean(u.ed);
+            if (u.hasOwnProperty('s') && u.s !== undefined) updates['s'] = clean(u.s);
+            if (u.hasOwnProperty('p') && u.p !== undefined) updates['p'] = clean(u.p);
+            if (u.hasOwnProperty('wk') && u.wk !== undefined) updates['wk'] = clean(u.wk);
+            if (u.hasOwnProperty('rm')) updates['rm'] = u.rm === true ? 'no' : (u.rm === "" ? "" : undefined);
             
             const merge = (b, upds) => {
                 let parts = b.split('?'), pathPart = parts[0], queryPart = parts.slice(1).join('?');
@@ -520,8 +611,36 @@
                     if (!map.hasOwnProperty(k)) ord.push(k);
                     map[k] = v;
                 });
-                for (let k in upds) { if (!map.hasOwnProperty(k)) ord.push(k); map[k] = upds[k]; }
-                let newQ = ord.map(k => `${k}=${map[k]}`).join('&');
+
+                // 强制官方建议顺序：ed -> s -> p -> wk -> rm
+                const standardOrder = ['ed', 's', 'p', 'wk', 'rm'];
+                for (let k in upds) { 
+                    if (upds[k] === "" || upds[k] === undefined) {
+                        delete map[k]; 
+                    } else {
+                        map[k] = upds[k]; 
+                    }
+                }
+                
+                // 处理 p 和 wk 冲突：官方规定不能同时启用
+                if (map.hasOwnProperty('p') && map['p'] !== '') {
+                    delete map['wk'];
+                } else if (map.hasOwnProperty('wk') && map['wk'] !== '') {
+                    delete map['p'];
+                }
+
+                // 重新排序
+                let finalOrd = [];
+                // 1. 优先按照标准顺序排列已知参数
+                standardOrder.forEach(k => {
+                    if (map.hasOwnProperty(k)) finalOrd.push(k);
+                });
+                // 2. 将原始链接中其他自定义参数追加到后面
+                ord.forEach(k => {
+                    if (!standardOrder.includes(k) && map.hasOwnProperty(k)) finalOrd.push(k);
+                });
+
+                let newQ = finalOrd.map(k => `${k}=${map[k]}`).join('&');
                 return newQ ? `${pathPart}?${newQ}` : pathPart;
             };
 
