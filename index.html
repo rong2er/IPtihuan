@@ -319,7 +319,7 @@
                 <div class="config-grid">
                     <div class="config-item" style="max-width: 120px;">
                         <label for="advEd">⚡ ED端口:</label>
-                        <input type="text" id="advEd" value="2048">
+                        <input type="text" id="advEd" value="2560">
                     </div>
                     
                     <div class="config-item">
@@ -544,7 +544,7 @@
             const ipList = parseAndCleanIpList('advIpList');
             const output = document.getElementById('advOutput');
             const params = {
-                ed: document.getElementById('advEd').value.trim() || '2048',
+                ed: document.getElementById('advEd').value.trim() || '2560',
                 p: document.getElementById('advProxyIP').value.trim().replace(/\/+$/, ''),
                 name: document.getElementById('advCustomName').value.trim() || '优选节点',
                 flag: document.getElementById('advFlag').value,
