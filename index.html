@@ -3,413 +3,395 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>优选 IP/域名 批量处理工具</title>
+    <title>优选 IP/域名 批量处理工具 - Elite Pro</title>
     <style>
+        :root {
+            --primary: #007aff;
+            --primary-hover: #0063cc;
+            --secondary: #f5f5f7;
+            --accent: #1d1d1f;
+            --bg-glass: rgba(255, 255, 255, 0.72);
+            --border-glass: rgba(0, 0, 0, 0.08);
+            --text-main: #1d1d1f;
+            --text-sub: #86868b;
+            --base-font-size: 16px; /* 提升 1.15 倍后的基准 */
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
-            max-width: 1300px;
-            margin: 5px auto;
-            padding: 5px 20px;
+            margin: 0;
+            height: 100vh; /* 固定高度 */
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: 
+                radial-gradient(circle at 14% 8%, rgba(52, 199, 89, 0.1), transparent 25%),
+                radial-gradient(circle at 84% 12%, rgba(0, 122, 255, 0.12), transparent 30%),
+                linear-gradient(#f8fafc 0%, #f1f5f9 50%, #f8fafc 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            padding: 10px; /* 极致压缩边距 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* 垂直居中 */
+            box-sizing: border-box;
+            font-size: var(--base-font-size);
+            overflow: hidden; /* 彻底禁绝滚动 */
         }
-        .main-title {
-            text-align: center;
-            color: #1a73e8;
-            margin-bottom: 30px;
-            font-size: 28px;
-            font-weight: 600;
+
+        body::before {
+            content: "";
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(15, 23, 42, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(15, 23, 42, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px; z-index: -1;
         }
+
         .section-box {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            margin-bottom: 15px;
-            padding: 15px;
-            border: 1px solid #e1e4e8;
+            max-width: 1450px;
+            width: 100%;
+            height: calc(100vh - 20px); /* 动态适配高度 */
+            background: var(--bg-glass);
+            backdrop-filter: blur(25px) saturate(200%);
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
+            border-radius: 20px;
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.05);
+            padding: 15px 25px; /* 压缩内边距 */
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
         }
+
         .section-title {
-            font-size: 18px;
-            color: #202124;
-            margin-bottom: 10px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 12px; /* 压缩标题间距 */
             display: flex;
             align-items: center;
             gap: 10px;
-            padding-bottom: 5px;
-            border-bottom: 2px solid #f1f3f4;
+            color: var(--accent);
         }
-        .section-basic { border-left: 6px solid #3498db; }
-        .section-advanced { border-left: 6px solid #e67e22; }
 
         .container {
             display: flex;
-            gap: 25px;
-            flex-wrap: wrap;
+            gap: 20px;
+            flex: 1; /* 撑满剩余空间 */
+            min-height: 0; /* 允许 flex 压缩 */
+            align-items: stretch;
         }
+
         .panel {
             flex: 1;
-            min-width: 350px;
             display: flex;
             flex-direction: column;
+            gap: 12px;
         }
+
         label {
             display: block;
-            margin: 6px 0 3px;
-            font-weight: 600;
-            color: #5f6368;
-            font-size: 13px;
+            font-weight: 700;
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
         }
+
         input[type="text"], textarea {
             width: 100%;
             box-sizing: border-box;
-            padding: 12px;
-            border: 1px solid #dadce0;
-            border-radius: 8px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 14px;
-            transition: all 0.2s;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            color: #1d1d1f;
+            transition: 0.2s;
         }
+
         input[type="text"]:focus, textarea:focus {
             outline: none;
-            border-color: #1a73e8;
-            box-shadow: 0 0 0 2px rgba(26,115,232,0.1);
+            background: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
         }
+
         button {
-            padding: 12px 20px;
-            background-color: #1a73e8;
-            color: white;
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: #fff;
             border: none;
-            border-radius: 8px;
-            font-size: 15px;
+            border-radius: 12px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-            margin-top: 15px;
-        }
-        button:active { transform: scale(0.98); }
-        button:hover { background-color: #1765cc; }
-
-        .btn-success { background-color: #34a853; }
-        .btn-success:hover { background-color: #2d8e47; }
-        .btn-warning { background-color: #fbbc04; color: #3c4043; }
-        .btn-warning:hover { background-color: #f1b000; }
-        .btn-orange { background-color: #e67e22; }
-        .btn-orange:hover { background-color: #d35400; }
-
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 15px;
-        }
-        .btn-group button {
-            flex: 1;
-            margin-top: 0;
-        }
-        .footer {
-            margin-top: 40px;
-            text-align: center;
-            font-size: 13px;
-            color: #70757a;
-        }
-        @media (max-width: 900px) {
-            .container { flex-direction: column; }
-            .panel { min-width: 100%; }
-        }
-        
-        /* 高级配置网格 */
-        .config-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-            margin: 15px 0;
-            padding: 20px;
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #e0e4e9;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        }
-        .config-item {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .config-item label {
-            margin: 0;
-            color: #5f6368;
-            font-size: 13px;
-            font-weight: 600;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 6px;
+            justify-content: center;
+            gap: 8px;
         }
-        /* 极致无缝组合框 */
+        button:hover {
+            background: #0062cc;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+        }
+        button:active { transform: translateY(0); }
+
+        .btn-dark { background: var(--primary); }
+        .btn-secondary { 
+            background: rgba(0, 122, 255, 0.85); 
+            font-size: 0.9rem;
+            padding: 8px 15px;
+        }
+        .btn-secondary:hover { background: var(--primary); }
+        .btn-orange { 
+            background: #ff9500; 
+            width: 75px; /* 统一固定宽度 */
+            font-size: 0.85rem; 
+            padding: 8px;
+            white-space: nowrap;
+        }
+        .btn-orange:hover { background: #e68600; }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: 100px 1.1fr 1.3fr; /* ED 缩窄，名称中等，SOCKS 宽 */
+            gap: 12px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 16px;
+            margin-top: 15px;
+        }
+
+        .full-width { grid-column: span 3; }
+
+        .dropdown-container { position: relative; width: 100%; }
+        .custom-dropdown {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0; width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        .dropdown-item { padding: 10px 16px; cursor: pointer; font-size: 0.9rem; border-bottom: 1px solid rgba(0, 0, 0, 0.03); color: #4b5563; }
+        .dropdown-item:hover { background: rgba(0, 122, 255, 0.08); color: var(--primary); }
+
         .input-group {
             display: flex;
             align-items: stretch;
-            border: 1px solid #dadce0;
-            border-radius: 8px;
-            background: #fff;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-            height: 42px;
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            overflow: visible; /* 关键：允许下拉框溢出显示 */
         }
-        .input-group:hover {
-            border-color: #babbbe;
-        }
-        .input-group:focus-within {
-            border-color: #1a73e8;
-            box-shadow: 0 0 0 3px rgba(26,115,232,0.15);
-        }
-        .input-group select {
-            border: none;
-            background: #f1f3f4;
-            padding: 0 12px;
-            border-right: 1px solid #dadce0;
+        .input-group select { 
+            border: none; 
+            background: #f5f5f7; 
+            padding: 0 4px 0 8px;
+            font-size: 0.9rem; 
+            width: 82px;
+            cursor: pointer;
             outline: none;
-            cursor: pointer;
-            font-size: 14px;
-            color: #3c4043;
-            margin: 0;
-            min-width: 85px;
+            display: none; /* 隐藏原生 select */
         }
-        .input-group input {
-            border: none !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-            flex: 1;
-            margin: 0 !important;
-            height: 100% !important;
-        }
-
-        /* 现代选项胶囊 */
-        .option-pill {
+        /* 自定义旗帜下拉框样式 */
+        .custom-flag-selector {
+            width: 95px; /* 稍微加宽以容纳箭头 */
+            background: #f0f0f2; /* 稍微加深背景色，看起来更像按钮 */
             display: flex;
             align-items: center;
-            background: #fff;
-            padding: 0 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: 1px solid #dadce0;
-            user-select: none;
-            height: 42px;
-            box-sizing: border-box;
-            width: 100%;
             justify-content: center;
-            margin-top: 24px; /* 对齐 label 留出的空间 */
-        }
-        .option-pill:hover {
-            background: #f8f9fa;
-            border-color: #c0c2c4;
-        }
-        .option-pill input {
-            width: 18px;
-            height: 18px;
-            margin-right: 10px;
+            gap: 4px;
             cursor: pointer;
+            border-right: 1px solid rgba(0, 0, 0, 0.08);
+            position: relative;
+            transition: background 0.2s;
+            border-radius: 12px 0 0 12px; /* 补全圆角 */
         }
-        .option-pill.active {
-            background: #e8f0fe;
-            border-color: #1a73e8;
-            color: #1a73e8;
-            font-weight: 600;
-            box-shadow: 0 2px 4px rgba(26,115,232,0.1);
-        }
-        .region-group {
-            margin-top: 8px;
-            padding: 12px;
-            background: #fff;
-            border: 1px solid #e1e4e8;
-            border-radius: 8px;
-        }
-        .region-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #eee;
-        }
-        .region-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-        }
-        .region-item {
+        .custom-flag-selector:hover { background: #e5e5e7; }
+        .chevron-icon {
+            opacity: 0.4;
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 14px;
         }
-        .region-item input {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
+        .flag-dropdown {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            width: 150px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            z-index: 1100;
+            display: none;
+            max-height: 280px; /* 限制高度防止超出屏幕 */
+            overflow-y: auto;   /* 内部滚动 */
         }
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: 500 !important;
-            margin: 0 !important;
-            cursor: pointer;
-            color: #333;
-        }
-        .btn-mini {
-            padding: 5px 12px;
-            font-size: 12px;
-            margin-top: 0;
-            background-color: #6c757d;
-            border-radius: 4px;
-        }
-        .inline-checkbox {
+        .flag-option {
+            padding: 6px 14px; /* 压缩行间距 */
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+        }
+        .flag-option:hover { background: rgba(0, 122, 255, 0.05); color: var(--primary); }
+        .input-group input { border: none !important; background: transparent !important; }
+
+        .region-group {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 16px;
+            padding: 15px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            margin-top: 10px;
+            flex: 1; /* 占据剩余高度 */
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        .region-list {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            flex: 1; /* 填满内部 */
             margin-top: 10px;
         }
-        .inline-checkbox input {
-            width: 18px;
-            height: 18px;
-        }
-        .alert-info {
-            background-color: #fff8e1;
-            color: #856404;
-            border: 1px solid #ffe082;
-            padding: 8px 12px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            font-size: 13px;
-            line-height: 1.4;
+        .region-item {
+            background: #fff;
+            border-radius: 14px;
             display: flex;
-            align-items: flex-start;
-            gap: 10px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border: 2.5px solid transparent; /* 预留边框位置防止跳动 */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            user-select: none;
         }
-        .alert-info b {
-            color: #d84315;
-            white-space: nowrap;
+        .region-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
         }
+        .region-item.active {
+            border-color: var(--primary);
+            box-shadow: 0 10px 25px rgba(0, 122, 255, 0.12);
+        }
+        /* 模仿参考站的蓝色勾选角标 */
+        .region-item.active::after {
+            content: "✓";
+            position: absolute;
+            top: 6px; right: 6px;
+            width: 18px; height: 18px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 900;
+        }
+        .region-item input { display: none; }
+        .region-flag { font-size: 1.8rem; line-height: 1; }
+        .region-name { font-size: 0.95rem; font-weight: 700; color: #4b5563; }
+        .region-item.active .region-name { color: var(--primary); }
+
+        .alert-info { background: rgba(0, 122, 255, 0.04); color: #0055b3; border-radius: 12px; padding: 12px 16px; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
-
-
-    <!-- 高级生成部分 -->
-    <div class="section-box section-advanced">
-        <div class="section-title">🚀 高级优选模式 <small style="color:#34a853; font-size:12px;">(V7-Final-完整修复版)</small></div>
+    <div class="section-box">
+        <div class="section-title">🚀 高级优选模式</div>
         <div class="container">
+            <!-- 左侧配置区 -->
             <div class="panel">
-                <label for="advBaseLink">🔗 原始节点链接 (推荐包含 TLS 配置):</label>
-                <input type="text" id="advBaseLink" placeholder="粘贴原始链接，生成器会保留 SNI 等原有参数...">
+                <label for="advBaseLink">🔗 原始节点链接:</label>
+                <input type="text" id="advBaseLink" placeholder="粘贴原始分享链接...">
                 
-                <label for="advIpList">📝 优选地址列表 (每行一个 IP 或域名):</label>
-                <textarea id="advIpList" rows="8" placeholder="粘贴杂乱 IP 列表，点击下方按钮解析..."></textarea>
+                <label for="advIpList">📝 优选地址列表:</label>
+                <textarea id="advIpList" rows="5" placeholder="粘贴杂乱 IP 列表..."></textarea>
                 
-                <div class="btn-group" style="margin-bottom: 10px;">
-                    <button class="btn-warning" onclick="cleanAdvIpList()">🧹 解析并去重 IP 列表</button>
-                </div>
-
-                <div class="alert-info">
-                    <div>
-                        <b>📢 配置说明：</b> 设置 ProxyIP 后将忽略地区匹配。支持 SOCKS5 转发及移除海外清理参数。
-                    </div>
-                </div>
+                <button class="btn-dark" onclick="cleanAdvIpList()">🧹 解析并去重 IP 列表</button>
 
                 <div class="config-grid">
-                    <div class="config-item" style="max-width: 120px;">
-                        <label for="advEd">⚡ ED端口:</label>
-                        <input type="text" id="advEd" value="2560">
-                    </div>
-                    
                     <div class="config-item">
-                        <label for="advProxyIP">🛡️ 指定 ProxyIP:</label>
-                        <input type="text" id="advProxyIP" placeholder="1.1.1.1">
+                        <label for="advEd">⚡ ED端口:</label>
+                        <input type="text" id="advEd" value="2560" style="text-align: center;">
                     </div>
-
                     <div class="config-item">
                         <label for="advCustomName">🏷️ 自定义名称:</label>
                         <div class="input-group">
-                            <select id="advFlag">
-                                <option value="🌐">🌐 默认</option>
-                                <option value="🇭🇰">🇭🇰 香港</option><option value="🇺🇸">🇺🇸 美国</option>
-                                <option value="🇸🇬">🇸🇬 新加坡</option><option value="🇰🇷">🇰🇷 韩国</option>
-                                <option value="🇯🇵">🇯🇵 日本</option><option value="🇩🇪">🇩🇪 德国</option>
-                            </select>
-                            <input type="text" id="advCustomName" placeholder="默认: 优选节点">
+                            <div class="custom-flag-selector" id="flagSelector" onclick="toggleFlagDropdown(event)">
+                                <div id="selectedFlagIcon">
+                                    <svg width="22" height="22" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.394 5.925 10.523 4.41A1.842 1.842 0 0 0 9.363 4C7.956 4 7.068 5.514 7.756 6.742l.382.682 3.463-.722c.056-.012.17-.06.294-.21.14-.17.308-.362.499-.567ZM3 20a1 1 0 0 1 1-1h16a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1Z" fill="#E84B3C"/><path d="M21.547 6.83c-.945-1.084-2.617-2.5-4.855-2.327-.929.071-1.77.549-2.429 1.057a10.429 10.429 0 0 0-1.598 1.57c-.243.293-.546.486-.86.551l-4.663.972-.966-1.771A1.691 1.691 0 0 0 3 7.692v3.69a2.294 2.294 0 0 0 2.727 2.252l3.3-.635-.507 1.234a2.004 2.004 0 0 0 3.456 1.966l3.236-4.315 5.37-1.852a2.141 2.141 0 0 0 1.343-1.32 1.898 1.898 0 0 0-.378-1.883Z" fill="#E84B3C"/></svg>
+                                </div>
+                                <div class="chevron-icon">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                                </div>
+                                <div id="flagDropdown" class="flag-dropdown"></div>
+                            </div>
+                            <input type="hidden" id="advFlagValue" value="✈️">
+                            <input type="text" id="advCustomName" placeholder="优选节点">
                         </div>
                     </div>
-
                     <div class="config-item">
                         <label for="advSocks5">🔗 SOCKS5 转发:</label>
-                        <input type="text" id="advSocks5" placeholder="user:pass@host:port">
-                    </div>
-
-                    <div class="config-item" style="justify-content: flex-end;">
-                        <label class="option-pill" id="rmLabel">
-                            <input type="checkbox" id="advRm" onchange="this.parentElement.classList.toggle('active', this.checked)">
-                            <span>关闭地区智能匹配 (rm=no)</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- 地区勾选 -->
-                <div class="region-group">
-                    <div class="region-header">
-                        <label style="margin:0; font-weight:600;">🌍 选择生成的地区 (wk):</label>
-                        <div style="display:flex; gap:5px;">
-                            <button class="btn-mini" onclick="toggleAllRegions(true)">全选</button>
-                            <button class="btn-mini" onclick="toggleAllRegions(false)">清空</button>
+                        <div style="display:flex; gap:8px; align-items: stretch;">
+                            <input type="text" id="advSocks5" placeholder="user:pass@host:port" style="flex:1">
+                            <button class="btn-orange" onclick="document.getElementById('advSocks5').value=''">清空</button>
                         </div>
                     </div>
-                    <div id="regionList" class="region-list">
-                        <!-- 脚本动态生成 -->
+                    <!-- ProxyIP 拉长占满整行 -->
+                    <div class="config-item full-width">
+                        <label for="advProxyIP">🛡️ 指定 ProxyIP (设置后将忽略 wk 地区参数):</label>
+                        <div style="display:flex; gap:10px; align-items: stretch;">
+                            <div class="dropdown-container" style="flex:1;">
+                                <input type="text" id="advProxyIP" placeholder="输入或点击选择内置域名，长域名可完整显示..." onclick="toggleProxyDropdown(event)" oninput="filterProxyDropdown()">
+                                <div id="proxyDropdown" class="custom-dropdown"></div>
+                            </div>
+                            <button class="btn-orange" onclick="document.getElementById('advProxyIP').value=''">清空</button>
+                        </div>
                     </div>
                 </div>
-                
-                <button class="btn-orange" onclick="generateAdvancedLinks()">🔥 批量生成高级优选节点 ➡️</button>
+
+                <div class="region-group">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <label style="margin:0; font-weight:700;">🌍 选择生成地区 (wk):</label>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn-secondary" style="padding:4px 10px; font-size:0.8rem;" onclick="toggleAllRegions(true)">全选</button>
+                            <button class="btn-secondary" style="padding:4px 10px; font-size:0.8rem;" onclick="toggleAllRegions(false)">清空</button>
+                        </div>
+                    </div>
+                    <div id="regionList" class="region-list"></div>
+                </div>
+
+                <button style="margin-top:5px; font-size:1.15rem; padding:18px;" onclick="generateAdvancedLinks()">🔥 批量生成高级优选节点</button>
             </div>
             
+            <!-- 右侧结果区 -->
             <div class="panel">
-                <label for="advOutput">✅ 高级生成结果:</label>
-                <textarea id="advOutput" rows="22" placeholder="生成的带参数结果..."></textarea>
+                <label for="advOutput">✅ 生成结果展示:</label>
+                <textarea id="advOutput" style="flex:1; background: rgba(0,0,0,0.01);" placeholder="生成的节点结果将显示在此..."></textarea>
                 
-                <div class="btn-group">
-                    <button class="btn-success" id="copyAdvBtn" onclick="copyResult('advOutput', 'copyAdvBtn')">📋 复制高级结果</button>
-                    <button class="btn-warning" onclick="deduplicate('advOutput')">🧹 结果去重</button>
+                <div class="btn-group" style="display:grid; grid-template-columns: 1fr 150px; gap:12px;">
+                    <button class="btn-dark" id="copyAdvBtn" onclick="copyResult('advOutput', 'copyAdvBtn')">📋 复制全部结果</button>
+                    <button class="btn-secondary" onclick="deduplicate('advOutput')">🧹 结果去重</button>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- 基础替换部分 -->
-    <div class="section-box section-basic">
-        <div class="section-title">📦 基础替换模式 (保留原始参数)</div>
-        <div class="container">
-            <div class="panel">
-                <label for="baseLink">🔗 原始节点分享链接:</label>
-                <input type="text" id="baseLink" placeholder="粘贴原始链接，例如 vless://...">
-                
-                <label for="ipList">📝 优选地址列表 (每行一个 IP 或域名):</label>
-                <textarea id="ipList" rows="10" placeholder="粘贴需要替换进去的 IP 或域名..."></textarea>
-                
-                <button onclick="generateLinks()">⚡ 开始基础生成 (仅替换地址) ➡️</button>
-            </div>
-            
-            <div class="panel">
-                <label for="output">✅ 基础生成结果:</label>
-                <textarea id="output" rows="14" placeholder="结果将显示在此..."></textarea>
-                
-                <div class="btn-group">
-                    <button class="btn-success" id="copyBtn" onclick="copyResult('output', 'copyBtn')">📋 复制结果</button>
-                    <button class="btn-warning" onclick="deduplicate('output')">🧹 文本去重</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="footer">
-        支持协议解析与参数智能合并。© 2026 优选 IP 批量处理工具。
     </div>
 
     <script>
@@ -418,81 +400,143 @@
             'DE': '🇩🇪德国', 'SE': '🇸🇪瑞典', 'NL': '🇳🇱荷兰', 'FI': '🇫🇮芬兰', 'GB': '🇬🇧英国'
         };
 
+        const proxyDomains = [
+            'proxy.xxxxxxxx.tk:50001', 'proxyip.cmliussss.net', 'ProxyIP.HK.CMLiussss.net',
+            'ProxyIP.SG.CMLiussss.net', 'ProxyIP.JP.CMLiussss.net', 'ProxyIP.US.CMLiussss.net',
+            'ProxyIP.Oracle.cmliussss.net', 'ProxyIP.Multacom.CMLiussss.net', 'ProxyIP.Vultr.CMLiussss.net',
+            'proxyip.wangqifei.eu.org', 'sjc.o00o.ooo', 'bpb.yousef.isegaro.com',
+            'nima.nscl.ir', 'turk.radicalization.ir', 'proxyip.oracle.fxxk.dedyn.io',
+            'proxyip.aliyun.hw.090227.xyz', 'proxyip.vultr.fxxk.dedyn.io', 'proxyip.digitalocean.hw.090227.xyz',
+            'proxyip.fxxk.dedyn.io', 'proxy.xinyitang.dpdns.org', 'kr.william.us.ci', 'tw.william.us.ci'
+        ];
+
+        function initProxyDropdown() {
+            const dropdown = document.getElementById('proxyDropdown');
+            dropdown.innerHTML = proxyDomains.map(d => `<div class="dropdown-item" onclick="selectProxy('${d}')">${d}</div>`).join('');
+        }
+
+        // 旗帜下拉逻辑
+        function toggleFlagDropdown(e) {
+            e.stopPropagation();
+            const d = document.getElementById('flagDropdown');
+            d.style.display = d.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function selectFlag(val, html) {
+            document.getElementById('advFlagValue').value = val;
+            // 如果 html 里包含 SVG 代码，直接取用，否则显示文字
+            document.getElementById('selectedFlagIcon').innerHTML = html.includes('svg') ? html.split('<span>')[0] : `<span style="font-size:1.2rem">${val}</span>`;
+            document.getElementById('flagDropdown').style.display = 'none';
+        }
+
+        function toggleProxyDropdown(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('proxyDropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function selectProxy(val) {
+            document.getElementById('advProxyIP').value = val;
+            document.getElementById('proxyDropdown').style.display = 'none';
+        }
+
+        function filterProxyDropdown() {
+            const val = document.getElementById('advProxyIP').value.toLowerCase();
+            const items = document.querySelectorAll('.dropdown-item');
+            items.forEach(item => {
+                item.style.display = item.innerText.toLowerCase().includes(val) ? 'block' : 'none';
+            });
+        }
+
+        document.addEventListener('click', () => {
+            const d = document.getElementById('proxyDropdown');
+            if(d) d.style.display = 'none';
+            const f = document.getElementById('flagDropdown');
+            if(f) f.style.display = 'none';
+        });
+
         function initRegions() {
             const container = document.getElementById('regionList');
-            if (!container) return;
-            container.innerHTML = ''; 
+            const flagDrop = document.getElementById('flagDropdown');
+            if (!container || !flagDrop) return;
+            
+            container.innerHTML = '';
+            // 先添加“默认”选项到旗帜下拉框
+            flagDrop.innerHTML = `
+                <div id="defaultSvgIcon" style="display:none">
+                    <svg width="22" height="22" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.394 5.925 10.523 4.41A1.842 1.842 0 0 0 9.363 4C7.956 4 7.068 5.514 7.756 6.742l.382.682 3.463-.722c.056-.012.17-.06.294-.21.14-.17.308-.362.499-.567ZM3 20a1 1 0 0 1 1-1h16a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1Z" fill="#E84B3C"/><path d="M21.547 6.83c-.945-1.084-2.617-2.5-4.855-2.327-.929.071-1.77.549-2.429 1.057a10.429 10.429 0 0 0-1.598 1.57c-.243.293-.546.486-.86.551l-4.663.972-.966-1.771A1.691 1.691 0 0 0 3 7.692v3.69a2.294 2.294 0 0 0 2.727 2.252l3.3-.635-.507 1.234a2.004 2.004 0 0 0 3.456 1.966l3.236-4.315 5.37-1.852a2.141 2.141 0 0 0 1.343-1.32 1.898 1.898 0 0 0-.378-1.883Z" fill="#E84B3C"/></svg>
+                </div>
+                <div class="flag-option" onclick="selectFlag('✈️', 'svg')">
+                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.394 5.925 10.523 4.41A1.842 1.842 0 0 0 9.363 4C7.956 4 7.068 5.514 7.756 6.742l.382.682 3.463-.722c.056-.012.17-.06.294-.21.14-.17.308-.362.499-.567ZM3 20a1 1 0 0 1 1-1h16a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1Z" fill="#E84B3C"/><path d="M21.547 6.83c-.945-1.084-2.617-2.5-4.855-2.327-.929.071-1.77.549-2.429 1.057a10.429 10.429 0 0 0-1.598 1.57c-.243.293-.546.486-.86.551l-4.663.972-.966-1.771A1.691 1.691 0 0 0 3 7.692v3.69a2.294 2.294 0 0 0 2.727 2.252l3.3-.635-.507 1.234a2.004 2.004 0 0 0 3.456 1.966l3.236-4.315 5.37-1.852a2.141 2.141 0 0 0 1.343-1.32 1.898 1.898 0 0 0-.378-1.883Z" fill="#E84B3C"/></svg>
+                    <span>默认</span>
+                </div>
+            `;
+
             Object.keys(regionMap).forEach(code => {
+                const fullText = regionMap[code];
+                const flag = fullText.substring(0, 4);
+                const name = fullText.substring(4);
+                const isChecked = (code === 'HK');
+                
+                // 1. 同步添加到旗帜下拉框
+                const opt = document.createElement('div');
+                opt.className = 'flag-option';
+                opt.innerHTML = `${flag} ${name}`;
+                opt.onclick = (e) => { e.stopPropagation(); selectFlag(flag, fullText); };
+                flagDrop.appendChild(opt);
+
+                // 2. 添加到地区选择卡片
                 const div = document.createElement('div');
-                div.className = 'region-item';
-                const isChecked = (code === 'HK') ? 'checked' : '';
-                div.innerHTML = `<input type="checkbox" id="reg_${code}" value="${code}" ${isChecked}><label for="reg_${code}" class="checkbox-label">${regionMap[code]}</label>`;
+                div.className = `region-item ${isChecked ? 'active' : ''}`;
+                div.innerHTML = `
+                    <input type="checkbox" id="reg_${code}" value="${code}" ${isChecked ? 'checked' : ''}>
+                    <div class="region-flag">${flag}</div>
+                    <div class="region-name">${name}</div>
+                `;
+                
+                div.onclick = () => {
+                    const cb = div.querySelector('input');
+                    cb.checked = !cb.checked;
+                    div.classList.toggle('active', cb.checked);
+                };
                 container.appendChild(div);
             });
         }
 
         function toggleAllRegions(selected) {
-            document.querySelectorAll('#regionList input[type="checkbox"]').forEach(cb => cb.checked = selected);
+            document.querySelectorAll('.region-item').forEach(item => {
+                const cb = item.querySelector('input');
+                cb.checked = selected;
+                item.classList.toggle('active', selected);
+            });
         }
 
-        window.onload = initRegions;
-
-        function generateLinks() {
-            const baseLink = document.getElementById('baseLink').value.trim();
-            const outputField = document.getElementById('output');
-            if (!baseLink) { alert('请填写基础链接'); return; }
-            
-            // 使用改进的解析逻辑处理输入列表
-            const ipItems = parseAndCleanIpList('ipList');
-            if (ipItems.length === 0) { alert('优选地址列表为空或未识别到有效地址'); return; }
-
-            const regex = /^([^:]+:\/\/)([^@]+@)(\[[^\]]+\]|[^:?#\/]+)(.*)$/;
-            if (!regex.test(baseLink)) { alert('链接格式不正确'); return; }
-            const match = baseLink.match(regex);
-            const prefix = match[1] + match[2], suffix = match[4];
-            
-            outputField.value = ipItems.map(item => {
-                return `${prefix}${item.host}${suffix}`;
-            }).join('\n');
-            deduplicate('output', true);
-        }
+        window.onload = () => { initRegions(); initProxyDropdown(); };
 
         function parseAndCleanIpList(id) {
             const textArea = document.getElementById(id);
             const text = textArea.value.trim();
             if (!text) return [];
-
             const lines = text.split(/\r?\n/);
             const ipList = [];
             const set = new Set();
-
-            // 基础正则定义
             const ipv4Pattern = /(?:\d{1,3}\.){3}\d{1,3}/;
             const ipv6Pattern = /\[[a-fA-F0-9:]+\]|(?:[a-fA-F0-9]*:){2,}[a-fA-F0-9.]*/;
             const domainPattern = /(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}/;
-            
-            // 组合正则用于在一行中寻找 Host (IP或域名)
             const hostReg = new RegExp(`(${ipv4Pattern.source})|(${ipv6Pattern.source})|(${domainPattern.source})`, 'i');
 
             for (let line of lines) {
                 line = line.trim();
-                if (!line) continue;
-
                 const hostMatch = line.match(hostReg);
                 if (hostMatch) {
                     let host = hostMatch[0];
-                    let rest = line.replace(host, ''); // 移除 host 寻找剩余部分的端口
-                    let port = "443"; // 默认端口
-
-                    // 1. 优先尝试强特征匹配 (冒号、井号、或者 "端口" 关键字后面的数字)
+                    let rest = line.replace(host, '');
+                    let port = "443";
                     let explicitPortMatch = rest.match(/(?::|#|端口)\s*(\d{1,5})(?![.\d])/i);
-                    if (explicitPortMatch) {
-                        port = explicitPortMatch[1];
-                    } else {
-                        // 2. 备选方案：寻找行内最后一个独立的数字块 (排除日期 2024-04-23 和 IP 段)
+                    if (explicitPortMatch) port = explicitPortMatch[1];
+                    else {
                         const numbers = rest.match(/(?:^|[^.\d\-/])(\d{1,5})(?![.\d\-/])/g);
                         if (numbers && numbers.length > 0) {
-                            // 提取纯数字并取最后一个
                             const lastNumMatch = numbers[numbers.length - 1].match(/\d+/);
                             if (lastNumMatch) {
                                 const val = parseInt(lastNumMatch[0]);
@@ -500,43 +544,21 @@
                             }
                         }
                     }
-
-                    // 3. 过滤干扰项
-                    const lowerHost = host.toLowerCase();
-                    if (lowerHost.includes('mb') || lowerHost.includes('ms') || lowerHost.includes('kb') || lowerHost.includes('gb')) continue;
-
-                    // IPv4 合法性校验 (0-255)
-                    if (hostMatch[1]) {
-                        const parts = host.split('.');
-                        if (parts.some(p => parseInt(p) > 255)) continue;
-                    }
-
-                    // IPv6 自动补括号
                     if (host.includes(':') && !host.startsWith('[')) host = `[${host}]`;
-                    
                     const key = `${host}:${port}`;
                     if (!set.has(key)) {
                         set.add(key);
-                        ipList.push({
-                            host: host, 
-                            port: ':' + port, 
-                            display: host.replace(/[\[\]]/g, '') + ':' + port
-                        });
+                        ipList.push({host: host, port: ':' + port, display: host.replace(/[\[\]]/g, '') + ':' + port});
                     }
                 }
             }
-            
-            // 写回文本框（去重并格式化后的列表）
-            if (ipList.length > 0) {
-                textArea.value = ipList.map(i => i.display).join('\n');
-            }
+            if (ipList.length > 0) textArea.value = ipList.map(i => i.display).join('\n');
             return ipList;
         }
 
         function cleanAdvIpList() {
             const list = parseAndCleanIpList('advIpList');
-            if (list.length > 0) alert(`✅ 顺利提取 ${list.length} 个 IP`);
-            else alert('⚠️ 未识别到有效内容');
+            if (list.length > 0) alert(`✅ 提取 ${list.length} 个 IP`);
         }
 
         function generateAdvancedLinks() {
@@ -547,15 +569,13 @@
                 ed: document.getElementById('advEd').value.trim() || '2560',
                 p: document.getElementById('advProxyIP').value.trim().replace(/\/+$/, ''),
                 name: document.getElementById('advCustomName').value.trim() || '优选节点',
-                flag: document.getElementById('advFlag').value,
+                flag: document.getElementById('advFlagValue').value,
                 s: document.getElementById('advSocks5').value.trim().replace(/\/+$/, ''),
-                rm: document.getElementById('advRm').checked
+                rm: false // 已移除该选项
             };
-
             if (!baseLink || ipList.length === 0) { alert('参数不全！'); return; }
             const bReg = /^([^:]+:\/\/)([^@]+@)(\[[^\]]+\]|[^:?#\/]+)(:\d+)?([^#]*)(#.*)?$/;
             if (!bReg.test(baseLink)) { alert('原始格式不识别'); return; }
-
             const match = baseLink.match(bReg);
             const protocol = match[1], account = match[2], pathQ = match[5] || '';
             const regions = Array.from(document.querySelectorAll('#regionList input:checked')).map(cb => cb.value);
@@ -569,17 +589,12 @@
                 } else if (regions.length > 0) {
                     regions.forEach(r => {
                         let nPQ = buildPathQuery(pathQ, { ed: params.ed, wk: r, s: params.s, rm: params.rm });
-                        const name = ipList.length > 1 ? `${params.flag} ${params.name}_${r}_${index + 1}` : `${params.flag} ${params.name}_${r}`;
+                        const rFlag = (regionMap[r] || '').slice(0, 4) || params.flag;
+                        const name = ipList.length > 1 ? `${rFlag} ${params.name}_${r}_${index + 1}` : `${rFlag} ${params.name}_${r}`;
                         results.push(`${protocol}${account}${item.host}${item.port}${nPQ}#${name}`);
                     });
                 } else {
-                    let nPQ = buildPathQuery(pathQ, { 
-                        ed: params.ed, 
-                        s: params.s, 
-                        rm: params.rm,
-                        p: "", 
-                        wk: "" 
-                    });
+                    let nPQ = buildPathQuery(pathQ, { ed: params.ed, s: params.s, rm: params.rm, p: "", wk: "" });
                     const name = ipList.length > 1 ? `${params.flag} ${params.name}_${index + 1}` : `${params.flag} ${params.name}`;
                     results.push(`${protocol}${account}${item.host}${item.port}${nPQ}#${name}`);
                 }
@@ -592,13 +607,10 @@
             const clean = (s) => String(s || '').trim().replace(/\/+$/, "");
             let res = clean(base);
             const updates = {};
-            
-            // 使用 hasOwnProperty 允许传递空字符串以执行删除逻辑
-            if (u.hasOwnProperty('ed') && u.ed !== undefined) updates['ed'] = clean(u.ed);
-            if (u.hasOwnProperty('s') && u.s !== undefined) updates['s'] = clean(u.s);
-            if (u.hasOwnProperty('p') && u.p !== undefined) updates['p'] = clean(u.p);
-            if (u.hasOwnProperty('wk') && u.wk !== undefined) updates['wk'] = clean(u.wk);
-            if (u.hasOwnProperty('rm')) updates['rm'] = u.rm === true ? 'no' : (u.rm === "" ? "" : undefined);
+            if (u.hasOwnProperty('ed')) updates['ed'] = clean(u.ed);
+            if (u.hasOwnProperty('s')) updates['s'] = clean(u.s);
+            if (u.hasOwnProperty('p')) updates['p'] = clean(u.p);
+            if (u.hasOwnProperty('wk')) updates['wk'] = clean(u.wk);
             
             const merge = (b, upds) => {
                 let parts = b.split('?'), pathPart = parts[0], queryPart = parts.slice(1).join('?');
@@ -611,35 +623,13 @@
                     if (!map.hasOwnProperty(k)) ord.push(k);
                     map[k] = v;
                 });
-
-                // 强制官方建议顺序：ed -> s -> p -> wk -> rm
                 const standardOrder = ['ed', 's', 'p', 'wk', 'rm'];
-                for (let k in upds) { 
-                    if (upds[k] === "" || upds[k] === undefined) {
-                        delete map[k]; 
-                    } else {
-                        map[k] = upds[k]; 
-                    }
-                }
-                
-                // 处理 p 和 wk 冲突：官方规定不能同时启用
-                if (map.hasOwnProperty('p') && map['p'] !== '') {
-                    delete map['wk'];
-                } else if (map.hasOwnProperty('wk') && map['wk'] !== '') {
-                    delete map['p'];
-                }
-
-                // 重新排序
+                for (let k in upds) { if (upds[k] === "" || upds[k] === undefined) delete map[k]; else map[k] = upds[k]; }
+                if (map.hasOwnProperty('p') && map['p'] !== '') delete map['wk'];
+                else if (map.hasOwnProperty('wk') && map['wk'] !== '') delete map['p'];
                 let finalOrd = [];
-                // 1. 优先按照标准顺序排列已知参数
-                standardOrder.forEach(k => {
-                    if (map.hasOwnProperty(k)) finalOrd.push(k);
-                });
-                // 2. 将原始链接中其他自定义参数追加到后面
-                ord.forEach(k => {
-                    if (!standardOrder.includes(k) && map.hasOwnProperty(k)) finalOrd.push(k);
-                });
-
+                standardOrder.forEach(k => { if (map.hasOwnProperty(k)) finalOrd.push(k); });
+                ord.forEach(k => { if (!standardOrder.includes(k) && map.hasOwnProperty(k)) finalOrd.push(k); });
                 let newQ = finalOrd.map(k => `${k}=${map[k]}`).join('&');
                 return newQ ? `${pathPart}?${newQ}` : pathPart;
             };
